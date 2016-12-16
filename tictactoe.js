@@ -1,5 +1,5 @@
 var turn = 0
-var points = ["x", "", "o", "", "", "", "" ,"x", "x"]
+var points = ["", "", "", "", "", "", "" ,"", ""]
 var winStates = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
 var turn = "player"
 var AIShape = "x"
@@ -21,15 +21,32 @@ function equal() {
 function maxIndex(arr, min) {
 	var maxInd = 0
 	var maxVal = arr[0]
+
 	for (i = 1; i < arr.length; i++) {
-		if ((min == false && arr[i] > maxVal) && (min == true && arr[i] < maxVal)) {
+		if ((min == false && arr[i] > maxVal) || (min == true && arr[i] < maxVal)) {
 			maxInd = i;
 			maxVal = arr[i];
 		}
 	}
+
 	return maxInd
 }
-
+function printTicTacToes(b) {
+  var i = 0;
+  var j = 0;
+  str = ""
+  for (i = 0; i < 3; i++) {
+    for (j = 0; j < 3; j++) {
+			if (b[(i*3)+j] == "")
+				str += " |"
+			else
+      	str += b[(i*3)+j] + "|";
+    }
+    str += "\n"
+  }
+	return str
+  //alert(str);
+}
 
 //Prints the input board
 function printTicTacToe() {
@@ -62,14 +79,14 @@ function checkWin(b) {
 
 //Simulate a game
 function simGame(board, simTurn, shape) {
-	console.log(board + "SIMSituation:" + simTurn)
-	//Check if game is won by either player and return score
+	console.log(printTicTacToes(board) + "SIMSituation:" + simTurn)
+	//Cxheck if game is won by either player and return score
 	if (checkWin(board)) {
 		console.log(simTurn + " LOSE!")
-		if (simTurn == "AI")
-			return -10
-		else
+		if (simTurn == "Player")
 			return 10
+		else
+			return -10
 	}
 
 	var i;
@@ -82,14 +99,15 @@ function simGame(board, simTurn, shape) {
 		for (j = 0; j < 3; j++) {
 		  var pos = (i*3)+j
 		  if (board[pos] == "") {
-				moves.push(pos)
 				var simBoard = board.slice(0);
 				simBoard[pos] = shape
 				if (simTurn == "Player") {
-				return 0
+					scores.push(simGame(simBoard, "AI", AIShape))
 				} else {
 					scores.push(simGame(simBoard, "Player", playerShape))
 				}
+				moves.push(pos)
+
 		  }
 		}
 	}
@@ -98,16 +116,19 @@ function simGame(board, simTurn, shape) {
 	if (moves.length == 0)
 		return 0
 
-	console.log(moves +'\n'+scores)
 
 	//Tally best score
-	if (simTurn == "Player") {
+	if (simTurn == "AI") {
 		bestInd = maxIndex(scores,false)
-	} else if (simTurn == "AI") {
+	} else if (simTurn == "Player") {
 		bestInd = maxIndex(scores,true)
 	}
+	console.log(moves +' '+scores)
+
 	choiceMove = moves[bestInd]
-	return scores[choiceMove]
+	console.log( simTurn + ' ' + choiceMove +' '+scores[bestInd])
+
+	return scores[bestInd]
 }
 
 function runGame() {
@@ -117,12 +138,12 @@ function runGame() {
 	  points[0] = "o"
 	  turn = "AI"
   } else {
-	console.log(points)
-	var pointsClone = points.slice(0)
-	val = simGame(pointsClone, turn, AIShape)
-	points[choiceMove] = "x"
-	console.log(printTicTacToe() + ":" + choiceMove)
-	turn = "Player"
+		var pointsClone = points.slice(0)
+		console.log(printTicTacToe())
+		val = simGame(pointsClone, turn, AIShape)
+		points[choiceMove] = "x"
+		console.log(printTicTacToe() + ":" + choiceMove)
+		turn = "Player"
   }
 }
 
