@@ -5,6 +5,7 @@ var turn = "player"
 var AIShape = "x"
 var playerShape = "o"
 var choiceMove = 0
+var realTable = document.getElementsByClassName('panel')
 
 
 function equal() {
@@ -142,9 +143,36 @@ function runGame() {
 		console.log(printTicTacToe())
 		val = simGame(pointsClone, turn, AIShape)
 		points[choiceMove] = "x"
+		detectBoard()
 		console.log(printTicTacToe() + ":" + choiceMove)
 		turn = "Player"
   }
 }
 
-window.onload = runGame();
+function detectBoard() {
+	var table = document.getElementsByClassName('panel')
+	for (var i = 0; i < table.length; i++) {
+		table.item(i).innerHTML = points[i];
+	}
+}
+
+function transferBoard() {
+	var table = document.getElementsByClassName('panel')
+	for (var i = 0; i < table.length; i++) {
+	  points[i] = table.item(i).innerHTML;
+	}
+}
+
+function clickPanel(event) {
+	var val = event.innerHTML;
+	console.log(event.innerHTML)
+	if (val == "") {
+		val = playerShape;
+	}
+	event.innerHTML = val;
+
+	transferBoard()
+	runGame()
+}
+
+window.onload = detectBoard()
